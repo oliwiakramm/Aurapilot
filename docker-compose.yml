@@ -1,0 +1,14 @@
+services:
+  aurapilot:
+    build: .
+    container_name: aurapilot
+    volumes:
+      - ./:/app
+      - logs_data:/app/logs
+    stdin_open: true
+    tty: true
+    ports:
+      - "8000:8000"
+
+volumes:
+  logs_data:

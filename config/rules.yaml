@@ -1,0 +1,66 @@
+alerts:
+# ----- CPU -----
+  - id: cpu_usage_warning
+    name: "High CPU usage"
+    metric: "cpu.usage_percent"
+    operator: ">="
+    threshold: 85.0
+    severity: WARNING
+    message: "CPU usage is over 85%. Check running processes"
+
+  - id: cpu_usage_critical
+    name: "Critical CPU usage"
+    metric: "cpu.usage_percent"
+    operator: ">="
+    threshold: 95.0
+    severity: CRITICAL
+    message: "CPU usage is over 95%. System may become unresponsive."
+  
+  - id: cpu_critical_load
+    name: "critical CPU load AVERAGE"
+    metric: cpu.load_avg.1min
+    operator: ">"
+    threshold: 4.0
+    severity: CRITICAL
+    message: "Load average exceeds number of available cores."
+# ----- RAM -----
+  - id: ram_usage_warning
+    name: "Hight RAM usage"
+    metric: "ram.used_percent"
+    operator: ">="
+    threshold: 80.0
+    severity: WARNING
+    message: "RAM usage is over 80%. Monitor memory consumption."
+
+  - id: ram_usage_critical
+    name: "Critical RAM usage"
+    metric: "ram.used_percent"
+    operator: ">="
+    threshold: 93.0
+    severity: CRITICAL
+    message: "RAM usage is over 93%. Risk of OOM (Out Of Memory) error."
+
+  - id: ram_free_critical
+    name: "Critical shortage of RAM"
+    metric: "ram.free_gb"
+    operator: "<"
+    threshold: 0.5
+    severity: CRITICAL
+    message: "Less than 500MB of RAM remaining. OOM (Out Of Memory) risk is high."
+
+  # --- DISK ---
+  - id: disk_space_warning
+    name: "Low disk space"
+    metric: "disk.used_percent"
+    operator: ">="
+    threshold: 80.0
+    severity: WARNING
+    message: "Disk is 80% full. Consider cleaning up."
+
+  - id: disk_space_critical
+    name: "Critical disk space"
+    metric: "disk.used_percent"
+    operator: ">="
+    threshold: 92.0
+    severity: CRITICAL
+    message: "Disk is 92% full. Filesystem may become corrupted."
