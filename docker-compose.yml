@@ -7,6 +7,8 @@ services:
       - logs_data:/app/logs
     stdin_open: true
     tty: true
+    environment:
+    - GEMINI_API_KEY=${GEMINI_API_KEY}
     ports:
       - "8000:8000"
 

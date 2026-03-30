@@ -1,6 +1,8 @@
 import yaml
 import json
 import sys
+from app.models import AlertModel
+from typing import Dict,Any,List
 
 SEVERITY_ICONS = {
     "CRITICAL": "🔴",
@@ -11,7 +13,7 @@ SEVERITY_ICONS = {
 SEVERITY_ORDER = {"CRITICAL": 0, "WARNING": 1, "INFO": 2}
 
 
-def get_nested_value(data, metric_path):
+def get_nested_value(data:Dict[str,Any], metric_path:Dict[str,str]) -> Dict[str,Any]:
     """
     Retrieves a value from a nested dictionary using dot notation.
     Special cases:
@@ -37,7 +39,7 @@ def get_nested_value(data, metric_path):
     return value
 
 
-def evaluate_rule(actual_value, operator, threshold):
+def evaluate_rule(actual_value, operator, threshold) -> bool:
     """Compares the value with the threshold using the specified operator."""
     if operator == ">=":
         return actual_value >= threshold
@@ -50,35 +52,17 @@ def evaluate_rule(actual_value, operator, threshold):
     return False
 
 
-def run_policy_engine(snapshot_path):
+def run_policy_engine(snapshot_path) -> List[AlertModel]:
 
     with open(snapshot_path, "r") as f:
         metrics = json.load(f)
 
-    with open("config/rules.yaml", "r") as f:
-        config = yaml.safe_load(f)
+    triggered = get_alerts(metrics)
 
-    triggered = []
-    not_found = []
-
-    for rule in config["alerts"]:
-        actual_value = get_nested_value(metrics, rule["metric"])
-
-        if actual_value is None:
-            not_found.append(rule["metric"])
-            continue
-
-        if evaluate_rule(actual_value, rule["operator"], rule["threshold"]):
-            triggered.append({
-                "rule": rule,
-                "actual_value": actual_value
-            })
-
-    triggered.sort(key=lambda x: SEVERITY_ORDER.get(x["rule"]["severity"], 99))
+    triggered.sort(key=lambda x: SEVERITY_ORDER.get(x.severity, 99))
 
     print("\n========== AURAPILOT POLICY ENGINE ==========")
     print(f"Snapshot: {snapshot_path}")
-    print(f"Rules evaluated: {len(config['alerts'])}")
     print("=" * 46)
 
     if not triggered:
@@ -96,14 +80,26 @@ def run_policy_engine(snapshot_path):
             print(f"   Message:   {rule['message']}")
             print()
 
-    if not_found:
-        print("⚠️  Metrics not found in snapshot:")
-        for m in not_found:
-            print(f"   - {m}")
-        print()
-
-    print(f"{'=' * 46}\n")
     return len(triggered)
+
+def get_alerts(snapshot:Dict[str,Any]) -> List[AlertModel]:
+    with open("config/rules.yaml", "r") as f:
+        config = yaml.safe_load(f)
+
+    triggered = []
+    for rule in config["alerts"]:
+        actual_value = get_nested_value(snapshot, rule["metric"])
+
+        if actual_value is None:
+            continue
+
+        if evaluate_rule(actual_value, rule["operator"], rule["threshold"]):
+            triggered.append(AlertModel(
+                severity=rule["severity"],
+                name = rule["name"],
+                message=rule["message"]
+            ))
+    return triggered
 
 
 if __name__ == "__main__":
