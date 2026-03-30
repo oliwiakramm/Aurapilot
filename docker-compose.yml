@@ -9,9 +9,15 @@ services:
     stdin_open: true
     tty: true
     environment:
-    - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     ports:
       - "8000:8000"
+    networks:
+     - aurapilot-net
 
 volumes:
   logs_data:
+
+networks:
+  aurapilot-net:
+    external: true
