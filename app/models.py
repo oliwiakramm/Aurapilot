@@ -6,12 +6,9 @@ class AlertModel(BaseModel):
     name:str
     message:str
 
-class AnalyzeRequest(BaseModel):
-    snapshot:Optional[Dict[str,Any]] = None
 
 class ResponseModel(BaseModel):
     timestamp:str
-    hostname:str
     alerts:List[AlertModel]
     analysis:str
     model_used:str

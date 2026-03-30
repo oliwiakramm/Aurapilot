@@ -4,14 +4,9 @@ from google import genai
 from google.genai import types
 from typing import Dict,Any,List
 from app.models import AlertModel
-from scripts.policy_engine import run_policy_engine
 
 
 load_dotenv()
-
-def get_alerts(snapshot):
-    return run_policy_engine(snapshot_path=snapshot)
-
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 
@@ -74,18 +69,20 @@ def build_prompt(snapshot:Dict[str,Any],alerts:List[AlertModel]) -> str:
     """
     return prompt
 
-def analyze(snapshot:Dict[str,Any]) -> tuple[str,List]:
+def analyze(snapshot:Dict[str,Any],alerts: List[AlertModel]) -> str:
     """
-    Retrieves active alerts, constructs a specialized prompt, and queries 
-    the Gemini model to generate a technical summary and recommendations.
+    Generates a technical AI diagnosis based on system metrics and active alerts.
+
+    Integrates snapshot data with pre-evaluated alerts to build a specialized 
+    prompt, then queries the Gemini model for a concise summary and recommendations.
 
     Args:
-        snapshot (Dict[str, Any]): Comprehensive system state including metrics and logs.
+        snapshot (Dict[str, Any]): Dictionary containing system telemetry (CPU, RAM, Disk).
+        alerts (List[AlertModel]): List of previously identified system issues.
 
     Returns:
-        Any: AI-generated response object on success, or an error string on failure.
+        str: The AI-generated diagnostic text or a formatted error message.
     """
-    alerts = get_alerts(snapshot)
     full_prompt = build_prompt(snapshot,alerts)
 
     try:
@@ -97,6 +94,6 @@ def analyze(snapshot:Dict[str,Any]) -> tuple[str,List]:
             contents=full_prompt
         )
 
-        return response
+        return response.text
     except Exception as e:
         return f"Error: Something went wrong while comunicating with AI: {e}"

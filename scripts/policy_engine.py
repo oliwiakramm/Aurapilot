@@ -66,7 +66,7 @@ def run_policy_engine(snapshot_path) -> List[AlertModel]:
     print("=" * 46)
 
     if not triggered:
-        print("\n✅ All systems nominal. No alerts triggered.\n")
+        print("\nAll systems are well. No alerts triggered.\n")
     else:
         print(f"\n{len(triggered)} alert(s) triggered:\n")
         for item in triggered:
