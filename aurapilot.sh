@@ -4,6 +4,7 @@ set -euo pipefail
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' 
 
 usage() {
@@ -109,7 +110,46 @@ cmd_collect() {
 }
 
 cmd_analyze() {
-    echo -e "${YELLOW}API analysis not yet implemented.${NC}"
+    echo -e "${YELLOW} Checking API status.${NC}"
+    if ! curl -sf http://localhost:8000/health > /dev/null; then
+        echo -e "${RED}Error: API is not responding."
+        exit 1
+    fi
+
+    echo -e "${GREEN} API is available. Downloading and analysing new snapshot..."
+
+    RESPONSE=$(curl -sf http://localhost:8000/analyze/latest)
+
+    if [ -z "$RESPONSE" ]; then
+        echo -e "${RED}Error: API did not return anything. Are there any snapshots generated in metrics/? First run './aurapilot.sh collect'.${NC}"
+        exit 1
+    fi
+
+    ALERTS_COUNT=$(echo "$RESPONSE" | jq '.alerts | length')
+
+    echo -e "\n================ ALERTS ($ALERTS_COUNT) ================"
+
+    if [ "$ALERTS_COUNT" -gt 0 ]; then
+        echo "$RESPONSE" | jq -c '.alerts[]' | while read -r alert; do
+            SEVERITY=$(echo "$alert" | jq -r '.severity')
+            NAME=$(echo "$alert" | jq -r '.name')
+            MESSAGE=$(echo "$alert" | jq -r '.message')
+            
+            if [ "$SEVERITY" == "CRITICAL" ]; then
+                echo -e "🔴 ${RED}[$SEVERITY]${NC} $NAME: $MESSAGE"
+            elif [ "$SEVERITY" == "WARNING" ]; then
+                echo -e "🟡 ${YELLOW}[$SEVERITY]${NC} $NAME: $MESSAGE"
+            else
+                echo -e "🔵 ${BLUE}$SEVERITY]${NC} $NAME: $MESSAGE"
+            fi
+        done
+    else
+        echo -e " ${GREEN}All is good. No alerts.${NC}"
+    fi
+
+    echo -e "\n================ AI REPORT  ================"
+    echo "$RESPONSE" | jq -r '.analysis'
+    echo -e "===========================================\n"
 }
 
 cmd_clean() {
