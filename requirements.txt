@@ -3,7 +3,9 @@ google-auth==2.49.1
 google-genai==1.69.0
 pydantic==2.12.5
 pydantic_core==2.41.5
+pytest==9.0.2
 python-dotenv==1.2.2
 PyYAML==6.0.3
 requests==2.33.0
+robotframework==7.4.2
 uvicorn==0.42.0
