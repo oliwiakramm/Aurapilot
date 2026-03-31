@@ -14,7 +14,8 @@ pipeline{
                 '''
                 
                 sh '''
-                    docker-compose run --rm aurapilot python3 -c "import yaml; yaml.safe_load(open('config/rules.yaml'))"
+                    pip3 install pyyaml --break-system-packages || pip3 install pyyaml
+                    python3 -c "import yaml; yaml.safe_load(open('config/rules.yaml'))"
                 '''
             }
         }
