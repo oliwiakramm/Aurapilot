@@ -36,12 +36,17 @@ pipeline{
         }
 
         stage('Tag & Deploy') {
+            environment {
+                GEMINI_API_KEY = credentials('GEMINI_API_KEY')
+            }
             steps {
-                sh "docker tag aurapilot:ci-test aurapilot:${env.BUILD_NUMBER}"
+               sh "docker tag aurapilot:ci-test aurapilot:${env.BUILD_NUMBER}"
                 sh "docker tag aurapilot:ci-test aurapilot:latest"
                 
                 sh 'docker rm -f aurapilot || true'
-
+                
+                sh 'docker network create aurapilot-net || true'
+                
                 sh '''
                     docker run -d \
                       --name aurapilot \
