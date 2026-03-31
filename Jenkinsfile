@@ -10,7 +10,7 @@ pipeline{
         stage('Validate'){
             steps{
                 sh 'find . -name "*.json" -not -path "./.git/*" | xargs -I{} python3 -m json.tool {} > /dev/null'
-                sh 'docker exec aurapilot python3 -c "import yaml; yaml.safe_load(open(\'config/rules.yaml\'))"'
+                sh 'docker compose run --rm aurapilot python3 -c "import yaml; yaml.safe_load(open(\'config/rules.yaml\'))"'
             }
         }
         stage('Tests'){
