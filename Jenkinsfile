@@ -40,8 +40,16 @@ pipeline{
                 sh "docker tag aurapilot:ci-test aurapilot:${env.BUILD_NUMBER}"
                 sh "docker tag aurapilot:ci-test aurapilot:latest"
                 
+                sh 'docker rm -f aurapilot || true'
+
                 sh '''
-                    docker compose up -d --force-recreate
+                    docker run -d \
+                      --name aurapilot \
+                      --network aurapilot-net \
+                      -p 8000:8000 \
+                      -e GEMINI_API_KEY="${GEMINI_API_KEY}" \
+                      -v logs_data:/app/logs \
+                      aurapilot:latest
                 '''
             }
         }
