@@ -1,0 +1,8 @@
+metrics/
+logs/
+.env
+.git/
+tests/
+*.md
+__pycache__/
+.pytest_cache/

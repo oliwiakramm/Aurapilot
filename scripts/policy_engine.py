@@ -59,8 +59,6 @@ def run_policy_engine(snapshot_path) -> List[AlertModel]:
 
     triggered = get_alerts(metrics)
 
-    triggered.sort(key=lambda x: SEVERITY_ORDER.get(x.severity, 99))
-
     print("\n========== AURAPILOT POLICY ENGINE ==========")
     print(f"Snapshot: {snapshot_path}")
     print("=" * 46)
@@ -99,6 +97,7 @@ def get_alerts(snapshot:Dict[str,Any]) -> List[AlertModel]:
                 name = rule["name"],
                 message=rule["message"]
             ))
+    triggered.sort(key=lambda x: SEVERITY_ORDER.get(x.severity, 99))
     return triggered
 
 
