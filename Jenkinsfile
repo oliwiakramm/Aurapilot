@@ -64,7 +64,7 @@ pipeline{
                 retry(3){
                    sh '''
                         sleep 5
-                        curl -sf http://localhost:8000/health || exit 1
+                        curl -sf http://aurapilot:8000/health || exit 1
                     '''
                 }
             }
