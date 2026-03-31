@@ -7,6 +7,15 @@ pipeline{
                 echo "Commit: ${env.GIT_COMMIT}"
             }
         }
+
+        stage('Build Image') {
+            steps {
+                sh '''
+                    docker build -t aurapilot:ci-test .
+                '''
+            }
+        }
+
         stage('Validate'){
             steps{
                 sh '''
@@ -14,32 +23,25 @@ pipeline{
                 '''
                 
                 sh '''
-                    pip3 install pyyaml --break-system-packages || pip3 install pyyaml
-                    python3 -c "import yaml; yaml.safe_load(open('config/rules.yaml'))"
+                    docker run --rm aurapilot:ci-test python3 -c "import yaml; yaml.safe_load(open('config/rules.yaml'))"
                 '''
             }
         }
         stage('Tests'){
             steps{
-                sh '''
-                    docker-compose run --rm aurapilot python3 -m pytest tests/ -v --tb=short
+               sh '''
+                    docker run --rm aurapilot:ci-test python3 -m pytest tests/ -v --tb=short
                 '''
             }
         }
 
-        stage('Build'){
-            steps{
+        stage('Tag & Deploy') {
+            steps {
+                sh "docker tag aurapilot:ci-test aurapilot:${env.BUILD_NUMBER}"
+                sh "docker tag aurapilot:ci-test aurapilot:latest"
+                
                 sh '''
-                    docker-compose build
-                    docker tag aurapilot:latest aurapilot:${BUILD_NUMBER}
-                '''
-            }
-        }
-
-        stage('Deploy'){
-            steps{
-                sh '''
-                    docker-compose up -d --force-recreate
+                    docker compose up -d --force-recreate
                 '''
             }
         }
