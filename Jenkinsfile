@@ -9,26 +9,37 @@ pipeline{
         }
         stage('Validate'){
             steps{
-                sh 'find . -name "*.json" -not -path "./.git/*" | xargs -I{} python3 -m json.tool {} > /dev/null'
-                sh 'docker compose run --rm aurapilot python3 -c "import yaml; yaml.safe_load(open(\'config/rules.yaml\'))"'
+                sh '''
+                    find . -name "*.json" -not -path "./.git/*" | xargs -I{} python3 -m json.tool {} > /dev/null
+                '''
+                
+                sh '''
+                    docker-compose run --rm aurapilot python3 -c "import yaml; yaml.safe_load(open('config/rules.yaml'))"
+                '''
             }
         }
         stage('Tests'){
             steps{
-                sh 'docker compose run --rm aurapilot python3 -m pytest tests/ -v --tb=short'
+                sh '''
+                    docker-compose run --rm aurapilot python3 -m pytest tests/ -v --tb=short
+                '''
             }
         }
 
         stage('Build'){
             steps{
-                sh 'docker compose build'
-                sh "docker tag aurapilot:latest aurapilot:${env.BUILD_NUMBER}"
+                sh '''
+                    docker-compose build
+                    docker tag aurapilot:latest aurapilot:${BUILD_NUMBER}
+                '''
             }
         }
 
         stage('Deploy'){
             steps{
-                sh 'docker compose up -d --force-recreate'
+                sh '''
+                    docker-compose up -d --force-recreate
+                '''
             }
         }
 
