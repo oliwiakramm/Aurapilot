@@ -9,7 +9,7 @@ import json
 
 router = APIRouter(tags=["Analyze"])
 
-def get_lastest_snapshot_data() -> Dict[str,Any]:
+def get_latest_snapshot_data() -> Dict[str,Any]:
     list_of_files = glob.glob("metrics/snapshot_*.json")
 
     if not list_of_files:
@@ -28,7 +28,13 @@ def get_lastest_snapshot_data() -> Dict[str,Any]:
 async def analyze_snapshot(snapshot:Optional[Dict[str,Any]] = Body(None)):
 
     if not snapshot:
-        snapshot = get_lastest_snapshot_data()
+        snapshot = get_latest_snapshot_data()
+    
+    if snapshot is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No snapshot found, run collector first"
+        )
 
     alerts = policy.evaluate(snapshot)
 
@@ -44,7 +50,14 @@ async def analyze_snapshot(snapshot:Optional[Dict[str,Any]] = Body(None)):
 
 @router.get("/latest",response_model=ResponseModel)
 async def analyze_latest():
-    snapshot = get_lastest_snapshot_data()
+    snapshot = get_latest_snapshot_data()
+
+    if snapshot is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No snapshot found, run collector first"
+        )
+
     alerts= policy.evaluate(snapshot)
     ai_analysis_text = gemini.analyze(snapshot,alerts)
 
