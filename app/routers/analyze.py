@@ -18,10 +18,20 @@ def get_latest_snapshot_data() -> Dict[str,Any]:
     
     Returns:
         Dict[str, Any]: The parsed JSON data from the latest snapshot file.
+
+    Raises:
+        HTTPException: 404 error if no metrics files exist.
         
     """
 
     list_of_files = glob.glob("metrics/snapshot_*.json")
+
+
+    if not list_of_files:
+        raise HTTPException(
+            status_code=404, 
+            detail="No snapshot found, run collector first"
+        )
 
     lastest_file = max(list_of_files,key=os.path.getmtime)
 
@@ -44,19 +54,10 @@ async def analyze_snapshot(snapshot:Optional[Dict[str,Any]] = Body(None)):
     Returns:
         ResponseModel: A structured object containing the timestamp, detected alerts, 
                       AI analysis text, and the model metadata.
-
-    Raises:
-        HTTPException: 404 error if no metrics files exist.
     """
 
     if not snapshot:
         snapshot = get_latest_snapshot_data()
-    
-    if snapshot is None:
-        raise HTTPException(
-            status_code=404,
-            detail="No snapshot found, run collector first"
-        )
 
     alerts = policy.evaluate(snapshot)
 
@@ -82,16 +83,8 @@ async def analyze_latest():
         ResponseModel: A structured object containing the timestamp, detected alerts, 
                       AI analysis text, and the model metadata.
         
-    Raises:
-        HTTPException: 404 error if no metrics files exist.
     """
     snapshot = get_latest_snapshot_data()
-
-    if snapshot is None:
-        raise HTTPException(
-            status_code=404,
-            detail="No snapshot found, run collector first"
-        )
 
     alerts= policy.evaluate(snapshot)
     ai_analysis_text = gemini.analyze(snapshot,alerts)
