@@ -30,7 +30,7 @@ pipeline{
         stage('Tests'){
             steps{
                sh '''
-                    docker run --rm aurapilot:ci-test python3 -m pytest tests/ -v --tb=short
+                    docker run --rm aurapilot:ci-test python3 -m pytest tests/ -v --cov=app --tb=short
                 '''
             }
         }
@@ -70,6 +70,15 @@ pipeline{
             }
 
         }
+
+        stage('BDD Tests (Robot)') {
+            steps {
+                sh '''
+                    docker exec aurapilot python3 -m robot --outputdir logs/robot tests/bdd/
+                '''
+                sh 'docker cp aurapilot:/app/logs/robot ./logs/robot'
+            }
+        }
     }
 
     post{
@@ -80,6 +89,7 @@ pipeline{
             echo "Pipeline failed — check logs above"
         }
         always {
+            archiveArtifacts artifacts: 'logs/robot/*.html', allowEmptyArchive: true
             sh 'docker image prune -f'
         }
     }
