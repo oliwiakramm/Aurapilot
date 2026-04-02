@@ -140,7 +140,7 @@ cmd_analyze() {
             elif [ "$SEVERITY" == "WARNING" ]; then
                 echo -e "🟡 ${YELLOW}[$SEVERITY]${NC} $NAME: $MESSAGE"
             else
-                echo -e "🔵 ${BLUE}$SEVERITY]${NC} $NAME: $MESSAGE"
+                echo -e "🔵 ${BLUE}[$SEVERITY]${NC} $NAME: $MESSAGE"
             fi
         done
     else

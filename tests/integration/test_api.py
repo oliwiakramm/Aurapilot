@@ -1,5 +1,4 @@
 import pytest
-from tests.conftest import healthy_snapshot,overloaded_snapshot,api_client
 from app.main import app
 from unittest.mock import patch
 

@@ -37,6 +37,19 @@ def get_latest_snapshot_data() -> Dict[str,Any]:
 
     with open(lastest_file,"r") as f:
         return json.load(f)
+    
+
+def run_analysis(snapshot):
+    alerts = policy.evaluate(snapshot)
+
+    ai_analysis_text = gemini.analyze(snapshot,alerts)
+
+    return ResponseModel(
+        timestamp=snapshot.get("timestamp","unknown_time"),
+        alerts=alerts,
+        analysis=ai_analysis_text,
+        model_used="gemini-2.5-flash"
+    )
 
 
 @router.post("",response_model=ResponseModel)
@@ -59,16 +72,9 @@ async def analyze_snapshot(snapshot:Optional[Dict[str,Any]] = Body(None)):
     if not snapshot:
         snapshot = get_latest_snapshot_data()
 
-    alerts = policy.evaluate(snapshot)
+    run_analysis(snapshot)
 
-    ai_analysis_text = gemini.analyze(snapshot,alerts)
 
-    return ResponseModel(
-        timestamp=snapshot.get("timestamp","unknown_time"),
-        alerts=alerts,
-        analysis=ai_analysis_text,
-        model_used="gemini-2.5-flash"
-    )
 
 
 @router.get("/latest",response_model=ResponseModel)
@@ -86,12 +92,4 @@ async def analyze_latest():
     """
     snapshot = get_latest_snapshot_data()
 
-    alerts= policy.evaluate(snapshot)
-    ai_analysis_text = gemini.analyze(snapshot,alerts)
-
-    return ResponseModel(
-        timestamp=snapshot.get("timestamp","unknown_time"),
-        alerts=alerts,
-        analysis=ai_analysis_text,
-        model_used="gemini-2.5-flash"
-    )
+    run_analysis(snapshot)

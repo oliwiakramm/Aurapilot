@@ -96,4 +96,4 @@ def analyze(snapshot:Dict[str,Any],alerts: List[AlertModel]) -> str:
 
         return response.text
     except Exception as e:
-        return f"Error: Something went wrong while comunicating with AI: {e}"
+        return f"Error: Something went wrong while communicating with AI: {e}"

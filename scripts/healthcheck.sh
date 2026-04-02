@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 PASSED=0
 FAILED=0
 CONTAINER_NAME="aurapilot"

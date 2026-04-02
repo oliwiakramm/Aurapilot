@@ -1,5 +1,4 @@
 import pytest
-from tests.conftest import healthy_snapshot,overloaded_snapshot
 from app.services.policy import evaluate
 
 def test_no_alerts_healthy(healthy_snapshot):

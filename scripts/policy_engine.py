@@ -1,8 +1,18 @@
+from pathlib import Path
 import yaml
 import json
 import sys
-from app.models import AlertModel
 from typing import Dict,Any,List
+from dataclasses import dataclass
+
+@dataclass
+class AlertModel:
+    severity:str
+    name:str
+    message:str
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+rules_path = BASE_DIR / "config" / "rules.yaml"
 
 SEVERITY_ICONS = {
     "CRITICAL": "🔴",
@@ -81,7 +91,7 @@ def run_policy_engine(snapshot_path) -> List[AlertModel]:
     return len(triggered)
 
 def get_alerts(snapshot:Dict[str,Any]) -> List[AlertModel]:
-    with open("config/rules.yaml", "r") as f:
+    with open(rules_path, "r") as f:
         config = yaml.safe_load(f)
 
     triggered = []

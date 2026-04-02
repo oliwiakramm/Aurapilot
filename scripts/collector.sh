@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 METRICS_DIR="metrics"
 SNAPSHOT_FILE="${METRICS_DIR}/snapshot_${TIMESTAMP}.json"
 
