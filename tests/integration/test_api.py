@@ -52,5 +52,14 @@ def test_no_snapshot_returns_404(api_client,tmp_path,monkeypatch):
 
 
 def test_invalid_body_returns_422(api_client):
+    """
+    Sprawdza, czy endpoint /analyze poprawnie odrzuca nieprawidłowy format body.
+
+    Test wysyła ciąg znaków (string) zamiast oczekiwanego obiektu JSON,
+    oczekując błędu walidacji 422 Unprocessable Entity.
+
+    Args:
+        api_client: Fixture klienta testowego API.
+    """
     response = api_client.post("/analyze",json="Mock string")
-    response.status_code = 422
+    assert response.status_code == 422
