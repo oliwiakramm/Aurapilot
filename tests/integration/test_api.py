@@ -37,7 +37,7 @@ def test_analyze_post(api_client,healthy_snapshot):
 
 def test_no_snapshot_returns_404(api_client,tmp_path,monkeypatch):
     """
-    Verifies the API's behavior when no snapshot files are available.
+    Verifies the API's behavior when no snapshot files are available. 
     
     Uses monkeypatch to change the working directory to an empty temporary 
     path, simulating a fresh installation without collected data. 

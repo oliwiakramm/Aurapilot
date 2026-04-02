@@ -30,7 +30,7 @@ pipeline{
         stage('Tests'){
             steps{
                sh '''
-                    docker run --rm aurapilot:ci-test python3 -m pytest tests/ -v --cov=app --tb=short
+                    docker run --rm aurapilot:ci-test python3 -m pytest tests/ -v --tb=short
                 '''
             }
         }

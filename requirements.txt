@@ -8,4 +8,5 @@ python-dotenv==1.2.2
 PyYAML==6.0.3
 requests==2.33.0
 robotframework==7.4.2
+robotframework-requests==0.9.7
 uvicorn==0.42.0
