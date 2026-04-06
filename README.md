@@ -105,7 +105,6 @@ Create a `.env` file in the project root:
 echo "GEMINI_API_KEY=your_key_here" > .env
 ```
 
-> **Never commit `.env` to version control.** It is listed in `.gitignore`.
 
 ### 3. Create the Docker network
 
