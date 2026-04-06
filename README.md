@@ -1,4 +1,6 @@
 
+# Aurapilot 🖥️
+
 ![Google Gemini](https://img.shields.io/badge/Google%20Gemini-4285F4?style=for-the-badge&logo=googlegemini&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
@@ -7,7 +9,6 @@
 ![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
 ![Robot Framework](https://img.shields.io/badge/Robot%20Framework-000000?style=for-the-badge&logo=robotframework&logoColor=white)
 
-# Aurapilot 🖥️
 
 **AI-Powered Infrastructure Health Monitor** — a REST API that collects Linux system metrics, evaluates them against a policy-as-code ruleset, and uses the Gemini AI model to generate human-readable infrastructure diagnostics.
 
