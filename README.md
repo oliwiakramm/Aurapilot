@@ -1,4 +1,14 @@
+
 # Aurapilot 🖥️
+
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-4285F4?style=for-the-badge&logo=googlegemini&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![Bash](https://img.shields.io/badge/CLI-Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
+![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
+![Robot Framework](https://img.shields.io/badge/Robot%20Framework-000000?style=for-the-badge&logo=robotframework&logoColor=white)
+
 
 **AI-Powered Infrastructure Health Monitor** — a REST API that collects Linux system metrics, evaluates them against a policy-as-code ruleset, and uses the Gemini AI model to generate human-readable infrastructure diagnostics.
 
@@ -95,7 +105,6 @@ Create a `.env` file in the project root:
 echo "GEMINI_API_KEY=your_key_here" > .env
 ```
 
-> **Never commit `.env` to version control.** It is listed in `.gitignore`.
 
 ### 3. Create the Docker network
 
