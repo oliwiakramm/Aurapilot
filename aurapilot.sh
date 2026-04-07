@@ -7,6 +7,8 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' 
 
+CONTAINER_NAME="aurapilot"
+
 usage() {
     echo "Usage: ./aurapilot.sh [command]"
     echo ""
@@ -18,21 +20,34 @@ usage() {
     echo "  health   - run healthcheck"
 }
 
+check_container() {
+    if ! docker ps --format '{{.Names}}' | grep -Eq "^${CONTAINER_NAME}\$"; then
+        echo -e "${RED}Error: Docker container '${CONTAINER_NAME}' is not running.${NC}"
+        echo -e "${YELLOW}Please start it using: docker-compose up -d${NC}"
+        exit 1
+    fi
+}
+
 cmd_status() {
+    check_container
+
+    docker exec -i "$CONTAINER_NAME" bash << 'EOF'
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[1;33m'
+    NC='\033[0m'
+
     CPU_LINE=$(top -bn1 | grep "Cpu(s)")
     CPU_IDLE=$(echo "$CPU_LINE" | grep -oP '[\d.]+(?=\s*id)' | tr -d ' ')
     CPU_USAGE=$(echo "scale=1; 100 - $CPU_IDLE" | bc | sed 's/^\./0./')
     CPU_CORES=$(nproc)
 
-
     # ----- LOAD AVERAGE -----
-
     LOAD_1=$(cat /proc/loadavg | awk '{print $1}')
     LOAD_5=$(cat /proc/loadavg | awk '{print $2}')
     LOAD_15=$(cat /proc/loadavg | awk '{print $3}')
 
     # ----- RAM -----
-
     RAM_TOTAL_BYTES=$(free -b | grep Mem | awk '{print $2}')
     RAM_USED_BYTES=$(free -b | grep Mem | awk '{print $3}')
     RAM_FREE_BYTES=$(free -b | grep Mem | awk '{print $4}')
@@ -40,6 +55,7 @@ cmd_status() {
     RAM_USED_GB=$(echo "scale=2; $RAM_USED_BYTES / 1073741824" | bc | sed 's/^\./0./')
     RAM_FREE_GB=$(echo "scale=2; $RAM_FREE_BYTES / 1073741824" | bc | sed 's/^\./0./')
     RAM_USED_PERCENT=$(echo "scale=1; $RAM_USED_BYTES * 100 / $RAM_TOTAL_BYTES" | bc | sed 's/^\./0./')
+    
     # ----- DISK -----
     DISK_LINE=$(df -k / | tail -1)
     DISK_TOTAL_KB=$(echo "$DISK_LINE" | awk '{print $2}')
@@ -102,11 +118,13 @@ cmd_status() {
     fi
 
     echo -e "Used %: ${DISK_COLOR}${DISK_PCT}%${NC}"
+EOF
 }
 
 cmd_collect() {
-    echo "Collecting system metrics"
-    ./scripts/collector.sh
+    check_container
+    echo -e "${YELLOW}Collecting system metrics from container...${NC}"
+    docker exec -i "$CONTAINER_NAME" ./scripts/collector.sh
 }
 
 cmd_analyze() {
@@ -153,8 +171,9 @@ cmd_analyze() {
 }
 
 cmd_clean() {
+    check_container
     echo -e "${YELLOW}Removing old snapshots...${NC}"
-    find metrics/ -name "*.json" -type f -mtime +7 -delete
+    docker exec -i "$CONTAINER_NAME" find metrics/ -name "*.json" -type f -mtime +7 -delete
     echo -e "${GREEN}Removed snapshots older than 7 days.${NC}"
 }
 

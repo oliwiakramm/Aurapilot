@@ -72,7 +72,7 @@ async def analyze_snapshot(snapshot:Optional[Dict[str,Any]] = Body(None)):
     if not snapshot:
         snapshot = get_latest_snapshot_data()
 
-    run_analysis(snapshot)
+    return run_analysis(snapshot)
 
 
 
@@ -92,4 +92,4 @@ async def analyze_latest():
     """
     snapshot = get_latest_snapshot_data()
 
-    run_analysis(snapshot)
+    return run_analysis(snapshot)

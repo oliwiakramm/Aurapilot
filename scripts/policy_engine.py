@@ -9,7 +9,7 @@ from dataclasses import dataclass
 class AlertModel:
     severity:str
     name:str
-    message:str
+    message:str 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 rules_path = BASE_DIR / "config" / "rules.yaml"
